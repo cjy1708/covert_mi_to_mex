@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(covert_to_mex)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 file(GLOB SOURCE_C "src/*.c")
 # 包含头文件，mi_utils.h
