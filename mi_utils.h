@@ -26,7 +26,6 @@
 //
 // in your published research.
 
-extern "C" {
 void make_box1(double *x, int N, double scal, int bs,
                int *box, int *lis, int *mxi);
 
@@ -286,4 +285,3 @@ void mi2h(double **x, int N, int K,
 
 void mi_embed(double **x, int dim, int N, int K, float *mi_cr,
               double *psi, double *phi, double minx, double maxx, double miny, double maxy);
-}

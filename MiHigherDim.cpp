@@ -15,11 +15,11 @@
 
 using matlab::mex::ArgumentList;
 
-class mi_higher_dim : public matlab::mex::Function {
+class MexFunction : public matlab::mex::Function {
     matlab::data::ArrayFactory factory;
 public:
     /**
-     *
+     * @example MiHigherDim("./zwspMIhigh.txt", 2, 1, 1, 128, 6, 2.0)
      * @param outputs
      * @param inputs 参数顺序：<filename> <dim> <edim> <tau> <# point> <# neighbours> [addNoise]
      */
@@ -39,7 +39,7 @@ public:
         int N{128};            // N   行
         double miValue;        // MI值
         int dim{2};            // Nd  列
-        int edim{1};           // emb_dim   embxding维度（默认为1，无嵌入）
+        int eDim{1};           // emb_dim   embxding维度（默认为1，无嵌入）
         int tau{1};            // emb_tau   延时，仅当emb_dim>1时才相关（默认值为1）
         double s, me;
         double addNoise{1e-8};  // 噪声幅度；默认1e-8
@@ -50,7 +50,7 @@ public:
             filename = matlab::engine::convertUTF16StringToUTF8String(u16str);
         }
         dim = inputs[1][0];
-        edim = inputs[2][0];
+        eDim = inputs[2][0];
         tau = inputs[3][0];
         if (inputs.size() > 4) {
             N = inputs[4][0];
@@ -82,7 +82,7 @@ public:
         fin_txt.close();
 
         // 添加噪声幅度
-        srand((dim + edim + tau) * N * K * (int) (x[(dim) / 2][N / 10]));
+        srand((dim + eDim + tau) * N * K * (int) (x[(dim) / 2][N / 10]));
         // 产生随机数
         default_random_engine generator;
         uniform_real_distribution<double> distribution(0.0, 1.0);
@@ -127,7 +127,7 @@ public:
         for (int i = 0; i < psi.size(); i++) {
             psi_ptr[i] = psi[i];
         }
-        redr_embed(x_ptr, dim, edim, tau, N, K, psi_ptr, &miValue);
+        redr_embed(x_ptr, dim, eDim, tau, N, K, psi_ptr, &miValue);
         for (int i = 0; i < rows; i++) {
             delete[] x_ptr[i];
         }
@@ -143,7 +143,7 @@ private:
         using namespace matlab::data;
         auto matlabPtr = getEngine();
 
-        if (inputs.size() < 4 || inputs.size() > 6) {
+        if (inputs.size() < 5 || inputs.size() > 7) {
             matlabPtr->feval(u"error", 0,
                              std::vector<Array>({factory.createScalar(
                                      "Usage: mi_higher_dim <filename> <dim> <edim> <tau> <# point> <# neighbours> [addNoise]")}));
@@ -155,36 +155,36 @@ private:
                                      {factory.createScalar("The first input argument {filename} must be a string.")}));
         }
 
-        if (inputs[1].getType() != ArrayType::INT8 || inputs[1].getType() != ArrayType::INT16
-            || inputs[1].getType() != ArrayType::INT32 || inputs[1].getType() != ArrayType::INT64) {
+        if (inputs[1].getType() != ArrayType::INT8 && inputs[1].getType() != ArrayType::INT16
+            && inputs[1].getType() != ArrayType::INT32 && inputs[1].getType() != ArrayType::INT64) {
             matlabPtr->feval(u"error", 0,
                              std::vector<Array>(
                                      {factory.createScalar("The second input argument {dim} must be a Int.")}));
         }
 
-        if (inputs[2].getType() != ArrayType::INT8 || inputs[2].getType() != ArrayType::INT16
-            || inputs[2].getType() != ArrayType::INT32 || inputs[2].getType() != ArrayType::INT64) {
+        if (inputs[2].getType() != ArrayType::INT8 && inputs[2].getType() != ArrayType::INT16
+            && inputs[2].getType() != ArrayType::INT32 && inputs[2].getType() != ArrayType::INT64) {
             matlabPtr->feval(u"error", 0,
                              std::vector<Array>(
                                      {factory.createScalar("The third input argument {edim} must be a Int.")}));
         }
 
-        if (inputs[3].getType() != ArrayType::INT8 || inputs[3].getType() != ArrayType::INT16
-            || inputs[3].getType() != ArrayType::INT32 || inputs[3].getType() != ArrayType::INT64) {
+        if (inputs[3].getType() != ArrayType::INT8 && inputs[3].getType() != ArrayType::INT16
+            && inputs[3].getType() != ArrayType::INT32 && inputs[3].getType() != ArrayType::INT64) {
             matlabPtr->feval(u"error", 0,
                              std::vector<Array>(
                                      {factory.createScalar("The fourth input argument {tau} must be a Int.")}));
         }
 
-        if (inputs.size() > 4 & inputs[4].getType() != ArrayType::INT8 || inputs[4].getType() != ArrayType::INT16
-            || inputs[4].getType() != ArrayType::INT32 || inputs[4].getType() != ArrayType::INT64) {
+        if (inputs.size() > 4 & inputs[4].getType() != ArrayType::INT8 && inputs[4].getType() != ArrayType::INT16
+            && inputs[4].getType() != ArrayType::INT32 && inputs[4].getType() != ArrayType::INT64) {
             matlabPtr->feval(u"error", 0,
                              std::vector<Array>(
                                      {factory.createScalar("The fifth input argument {point} must be a Int.")}));
         }
 
-        if (inputs.size() > 5 && inputs[5].getType() != ArrayType::INT8 || inputs[5].getType() != ArrayType::INT16
-            || inputs[5].getType() != ArrayType::INT32 || inputs[5].getType() != ArrayType::INT64) {
+        if (inputs.size() > 5 && inputs[5].getType() != ArrayType::INT8 && inputs[5].getType() != ArrayType::INT16
+            && inputs[5].getType() != ArrayType::INT32 && inputs[5].getType() != ArrayType::INT64) {
             matlabPtr->feval(u"error", 0,
                              std::vector<Array>(
                                      {factory.createScalar("The sixth input argument {neighbours} must be a Int.")}));
