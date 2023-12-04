@@ -139,6 +139,14 @@ public:
     }
 
 private:
+    /**
+     * @brief Checks the validity of the input and output arguments.
+     *
+     * This function checks the number and types of the input and output arguments and throws an error if they are not valid.
+     *
+     * @param outputs The list of output arguments.
+     * @param inputs The list of input arguments.
+     */
     void checkArguments(matlab::mex::ArgumentList &outputs, matlab::mex::ArgumentList &inputs) {
         using namespace matlab::data;
         auto matlabPtr = getEngine();

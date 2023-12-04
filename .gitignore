@@ -41,3 +41,6 @@ gen
 *.app
 
 cmake-build-debug
+
+# mex create mex file
+MiHigherDim.mexa64
